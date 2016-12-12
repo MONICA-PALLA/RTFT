@@ -1,0 +1,25 @@
+url = 'http://192.168.1.152:8080/shot.jpg';
+img  = imread(url);
+fh = image(img);
+detector = vision.CascadeObjectDetector();
+arduino=serial('COM1','BaudRate',9600);
+fopen(arduino);
+while(1)
+    img  = imread(url);
+    set(fh,'CData',img);
+    bbox = step(detector, img); % Creating bounding box using detector
+    bbox(1) 
+    fprintf(arduino,'%s',char(bbox(1)));		
+%bbox will show the whole matrix , we just need bbox(1) ie first value to locate face either on right or left, if there is no face we will get value 0
+    if ~ isempty(bbox)
+        for i=1:size(bbox,1)
+            rectangle('position', bbox(i, :), 'lineWidth', 2, 'edgeColor', 'y');
+        end
+    end
+end
+%we are not watching images here in matlab because when i tried watching
+%images too, i got some errors, instead i deleted it. we can see live video
+%for faces in browser itself, this code is just for moving the wheels
+%accordingly.
+%before using ip webcam set video preferences to 640X480
+

@@ -1,0 +1,74 @@
+
+ARDUINO CODE :-
+
+
+int ledPin=13;
+int matlabData;
+ 
+void setup() 
+{
+  pinMode(ledPin,OUTPUT);
+  Serial.begin(9600);
+}
+ 
+void loop() 
+{
+   
+   if(Serial.available()>0) // if there is data to read
+   {
+    matlabData=Serial.read(); // read data
+    if(matlabData==1)
+      digitalWrite(ledPin,HIGH); // turn light on
+    else if(matlabData==2)
+      digitalWrite(ledPin,LOW); // turn light off
+  }
+}
+
+
+
+MATLAB CODE :- 
+
+
+
+clear all
+clc
+answer=1;
+arduino=serial('/dev/ttyACM0','BaudRate',9600);
+fopen(arduino);
+while answer
+fprintf(arduino,'%s',char(answer));
+answer=input('Enter led value 1 or 2 (1=ON, 2=OFF, 0=EXIT PROGRAM): ');
+end
+fclose(arduino);
+
+
+
+VIDEO STREAM 
+
+url = 'http://192.168.1.152:8080/shot.jpg';
+img  = imread(url);
+fh = image(img);
+detector = vision.CascadeObjectDetector();
+while(1)
+    img  = imread(url);
+    set(fh,'CData',img);
+    bbox = step(detector, img); % Creating bounding box using detector
+    bbox(1) %bbox will show the whole matrix , we just need bbox(1) ie
+first value to locate face either on right or left, if there is no
+face we will get value 0
+    if ~ isempty(bbox)
+        for i=1:size(bbox,1)
+            rectangle('position', bbox(i, :), 'lineWidth', 2, 'edgeColor', 'y');
+        end
+    end
+end
+%we are not watching images here in matlab because when i tried watching
+%images too, i got some errors, instead i deleted it. we can see live video
+%for faces in browser itself, this code is just for moving the wheels
+%accordingly.
+%before using ip webcam set video preferences to 640X480
+
+
+
+
+
